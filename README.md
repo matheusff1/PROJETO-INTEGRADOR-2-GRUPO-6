@@ -1,28 +1,8 @@
-# Servidor exemplo de backend com TypeScript
+# PROJETO INTEGRADOR 2 ENGENHARIA DE SOFTWARE PUC CAMPINAS
 
-Este é um projeto apenas de "esqueleto" para você criar seu backend em TypeScript. 
+Aplicação web desenvolvida para o projeto acadêmico
 
-## Instalando as dependências
+## TEMA DO PROJETO: SISTEMA DE APOSTAS
 
-Ao fazer o clone do repositório, basta rodar o comando: 
+Sistema de apostas, desenvolvido em TypeScript, HTML e banco de dados PostgresSQL
 
-```
-npm install
-```
-O comando acima instalará todas as dependências que constam no arquivo package.json.
-
-## Iniciando o servidor
-
-Para garantir que seu código esteja funcionando, na raíz do projeto rode o comando: 
-
-```
-npm run build
-```
-Como consequência, será gerado o diretório build constando o arquivo server.js. 
-
-Acesse o diretório onde está o arquivo server.js (build/src) e digite o comando
-```
-node server.js
-```
-
-Voilà!
