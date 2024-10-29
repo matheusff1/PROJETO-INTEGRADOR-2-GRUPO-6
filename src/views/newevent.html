@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Criar Evento</title>
+</head>
+<link rel="stylesheet" href="../styles/styles.css">
+<body>
+<header>
+  <h1>Criar Novo Evento de Apostas</h1>
+</header>
+
+<div class="container">
+  <h2>Detalhes do Evento</h2>
+
+  <form id="new-event-form">
+    <label for="event-name">Nome do Evento:</label>
+    <input type="text" id="event-name" name="event-name" required>
+
+    <label for="descrition-event">Descrição:</label>
+    <input type="text" id="descrition-event" name="descrition-event" maxlength="150" required>
+    <br><br>
+
+    <label for="side-a">Lado A:</label>
+    <input type="text" id="side-a" name="side-a" required>
+
+    <label for="side-b">Lado B:</label>
+    <input type="text" id="side-b" name="side-b" required>
+
+    <label for="data-evento">Data do Evento:</label>
+    <input type="datetime-local" id="data-evento" name="data-evento" required> <!-- Campo para a data do evento -->
+
+    <label for="side-a-percentage">Porcentagem de Pagamento Lado A:</label>
+    <input type="number" id="side-a-percentage" name="side-a-percentage" step="0.01" min="1" required>
+
+    <label for="side-b-percentage">Porcentagem de Pagamento Lado B:</label>
+    <input type="number" id="side-b-percentage" name="side-b-percentage" step="0.01" min="1" required>
+
+    <button type="submit">Criar Evento</button>
+  </form>
+
+  <div id="response-message"></div>
+</div>
+
+<footer>
+  <p>&copy; 2024 Sistema de Apostas</p>
+</footer>
+
+<script src="/ts/newevent.js"></script> <!-- Referência ao arquivo JavaScript -->
+</body>
+</html>

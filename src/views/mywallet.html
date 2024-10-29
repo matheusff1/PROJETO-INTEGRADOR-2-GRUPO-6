@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha Carteira</title>
+</head>
+<link rel="stylesheet" href="../styles/styles.css">
+<body>
+<h1>Gerenciar Carteira</h1>
+<p>Bem-vindo, <span id="user-email"></span>!</p>
+
+<div id="current-balance">Saldo atual: R$ 0.00</div>
+
+<div>
+  <h2>Adicionar Saldo</h2>
+  <input type="number" id="add-balance-amount" placeholder="Valor a adicionar" min="0" step="0.01">
+  <button id="add-balance-btn">Adicionar</button>
+</div>
+
+<div>
+  <h2>Remover Saldo</h2>
+  <input type="number" id="remove-balance-amount" placeholder="Valor a remover" min="0" step="0.01">
+  <button id="remove-balance-btn">Remover</button>
+</div>
+
+<script src="/ts/mywallet.js"></script>
+</body>
+</html>

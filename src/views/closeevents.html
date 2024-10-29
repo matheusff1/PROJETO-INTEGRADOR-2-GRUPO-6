@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Encerrar Evento</title>
+  <link rel="stylesheet" href="../styles/styles.css">
+</head>
+<body>
+  <h1>Encerrar Evento</h1>
+
+  <form id="closeEventForm">
+    <div>
+      <label for="eventId">Nome do Evento:</label>
+      <input type="text" id="eventId" name="eventId" placeholder="Insira o ID do evento" required>
+    </div>
+
+    <div>
+      <label for="winningSide">Lado Vencedor:</label>
+      <select id="winningSide" name="winningSide" required>
+        <option value="">Selecione o lado vencedor</option>
+      </select>
+    </div>
+
+    <button type="submit">Encerrar Evento</button>
+  </form>
+
+  <div id="message"></div>
+
+  <script src="/ts/closeevents.js"></script>
+</body>
+</html>
