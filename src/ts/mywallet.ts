@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const amountInput = document.getElementById('remove-balance-amount') as HTMLInputElement;
       const amount = parseFloat(amountInput.value);
       if (!isNaN(amount) && amount > 0) {
-        await removeBalanceFromDatabase(userEmail!, amount);
+        await handleWithdrawal(userEmail!, amount);
         updateBalance(userEmail!);
       }
     });
@@ -68,6 +68,39 @@ async function updateBalanceInDatabase(email: string, amount: number): Promise<v
   });
   if (!response.ok) {
     console.error('Erro ao adicionar saldo:', response.statusText);
+  }
+}
+
+async function calculateWithdrawalFee(amount: number): Promise<number> {
+  if (amount <= 0) {
+    throw new Error("O valor deve ser maior que zero.");
+  } else if (amount <= 100) {
+    return amount * 0.04;
+  } else if (amount <= 1000) {
+    return amount * 0.03;
+  } else if (amount <= 5000) {
+    return amount * 0.02;
+  } else if (amount <= 101000) {
+    return amount * 0.01;
+  } else {
+    throw new Error("O valor excede o limite máximo de saque.");
+  }
+}
+
+async function handleWithdrawal(email: string, amount: number): Promise<void> {
+  try {
+    const fee = await calculateWithdrawalFee(amount);
+    const totalAmount = amount - fee;
+
+    if (totalAmount <= 0) {
+      console.error("O valor após a taxa não é suficiente para realizar o saque.");
+      return;
+    }
+
+    await removeBalanceFromDatabase(email, totalAmount);
+    console.log(`Saque realizado com sucesso. Valor solicitado: R$${amount.toFixed(2)}, taxa: R$${fee.toFixed(2)}, valor final descontado: R$${totalAmount.toFixed(2)}`);
+  } catch (error) {
+    console.error("Erro ao calcular a taxa ou realizar o saque:", error);
   }
 }
 
