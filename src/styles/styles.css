@@ -70,3 +70,9 @@ button:active {
         font-size: 16px;
     }
 }
+
+    #current-balance{
+        color: white;
+        font-size: medium;
+        
+    }

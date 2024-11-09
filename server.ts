@@ -5,6 +5,7 @@ import pkg from 'pg';
 import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -19,6 +20,8 @@ const port = 3200;
 app.use(express.static(path.join(__dirname, 'src', 'views')));
 app.use('/ts', express.static(path.join(__dirname, 'src', 'ts')));
 app.use('/styles', express.static(path.join(__dirname, 'src' ,'styles')));
+app.use('/imagem', express.static(path.join(__dirname, 'src', 'imagem')));
+
 
 
 
@@ -174,17 +177,49 @@ app.post('/wallet/add-balance', async (req: Request, res: Response): Promise<voi
     }
 });
 
+function calculateWithdrawalFee(amount: number): number {
+    if (amount <= 100) {
+        return amount * 0.04;
+    } else if (amount <= 1000) {
+        return amount * 0.03;
+    } else if (amount <= 5000) {
+        return amount * 0.02;
+    } else if (amount <= 101000) {
+        return amount * 0.01;
+    } else {
+        throw new Error("O valor excede o limite máximo de saque.");
+    }
+  }
 app.post('/wallet/remove-balance', async (req: Request, res: Response): Promise<void> => {
     console.log('Requisição POST para /wallet/remove-balance');
     const { email, amount } = req.body;
+  
     try {
+        // Consulta o saldo atual do usuário
         const result = await pool.query('SELECT balance FROM wallets WHERE email = $1', [email]);
+        
         if (result.rows.length > 0) {
             const currentBalance = result.rows[0].balance;
-            if (currentBalance >= amount) {
-                await pool.query('UPDATE wallets SET balance = balance - $1 WHERE email = $2', [amount, email]);
-                console.log('Saldo removido para:', email);
-                res.status(200).json({ message: 'Saldo removido com sucesso!' });
+  
+            // Calcula a taxa de saque e o total a ser descontado
+            const fee = calculateWithdrawalFee(amount);
+            const totalAmount = amount - fee;
+  
+            if (currentBalance >= totalAmount) {
+                // Atualiza o saldo subtraindo o valor total (valor solicitado + taxa)
+                await pool.query('UPDATE wallets SET balance = balance - $1 WHERE email = $2', [totalAmount, email]);
+                
+                console.log(`Saldo removido para: ${email}. Valor solicitado: R$${amount.toFixed(2)}, taxa: R$${fee.toFixed(2)}, total descontado: R$${totalAmount.toFixed(2)}`);
+                
+                // Retorna a resposta com os detalhes do saque
+                res.status(200).json({
+                    message: 'Saldo removido com sucesso!',
+                    detalhes: {
+                        valorSolicitado: amount.toFixed(2),
+                        taxa: fee.toFixed(2),
+                        totalDescontado: totalAmount.toFixed(2)
+                    }
+                }); 
             } else {
                 console.log('Saldo insuficiente para:', email);
                 res.status(400).json({ message: 'Saldo insuficiente.' });
@@ -197,7 +232,7 @@ app.post('/wallet/remove-balance', async (req: Request, res: Response): Promise<
         console.error('Erro ao remover saldo:', error);
         res.status(500).json({ message: 'Erro no servidor.' });
     }
-});
+  });
 
 app.post('/eventos/create', async (req: Request, res: Response): Promise<void> => {
     const { nome_evento, lado_a, lado_b, data_evento, porcentagem_lado_a, porcentagem_lado_b, descricao_event } = req.body;

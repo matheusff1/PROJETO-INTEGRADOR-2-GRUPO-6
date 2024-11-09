@@ -1,38 +1,41 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Tela de Apostas</title>
-  <link rel="stylesheet" href="../styles/styles.css">
-</head>
-<body>
-<header>
-  <h1>Tela de Apostas</h1>
-  <div id="user-email"></div>
-</header>
-
-<div class="container">
-  <h2>Eventos Disponíveis para Apostas</h2>
-  <table id="events-table">
-    <thead>
-    <tr>
-      <th>Nome do Evento</th>
-      <th>Lado A</th>
-      <th>Lado B</th>
-      <th>Data do Evento</th>
-      <th>Apostar</th>
-    </tr>
-    </thead>
-    <tbody>
-    </tbody>
-  </table>
-</div>
-
-<footer>
-  <p>&copy; 2024 Sistema de Apostas</p>
-</footer>
-
-<script src="/ts/bet.js"></script>
-</body>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tela de Apostas</title>
+    <link rel="stylesheet" href="../styles/styles.css">
+    
+  </head>
+  <body>
+    <header>
+      <h2>Tela de Apostas</h2>
+      <div id="user-email"></div>
+    </header>
+    
+    
+    <div class="container">
+      <h2>Eventos Disponíveis para Apostas</h2>
+      <table class="table" id="events-table">
+        <thead>
+          <tr>
+            <th scope="col">Nome do Evento</th>
+            <th scope="col">Lado A</th>
+            <th scope="col">Lado B</th>
+            <th scope="col">Data do Evento</th>
+            <th>Apostar</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </div>
+    <footer>
+      <p>&copy; 2024 Sistema de Apostas</p>
+    </footer>
+    
+    <script src="/ts/bet.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+  </body>
 </html>

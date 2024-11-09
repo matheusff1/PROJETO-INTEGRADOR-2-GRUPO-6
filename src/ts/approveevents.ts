@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         <td>${event.lado_b}</td>
         <td>${new Date(event.data_evento).toLocaleString('pt-BR')}</td>
         <td><button onclick="approveEvent(${event.id}, '${userEmail}')">Aprovar</button></td>
+        <td><button onclick="approveEvent(${event.id}, '${userEmail}')">Reprovar</button></td>
       `;
       tableBody.appendChild(row);
     });

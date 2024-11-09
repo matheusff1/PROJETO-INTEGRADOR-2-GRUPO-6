@@ -16,7 +16,8 @@
 
   <form id="new-event-form">
     <label for="event-name">Nome do Evento:</label>
-    <input type="text" id="event-name" name="event-name" required>
+    <input type="text" id="event-name" name="event-name" maxlength="50" required>
+    <br><br>
 
     <label for="descrition-event">Descrição:</label>
     <input type="text" id="descrition-event" name="descrition-event" maxlength="150" required>
@@ -27,15 +28,17 @@
 
     <label for="side-b">Lado B:</label>
     <input type="text" id="side-b" name="side-b" required>
-
+    <br><br>
     <label for="data-evento">Data do Evento:</label>
     <input type="datetime-local" id="data-evento" name="data-evento" required> <!-- Campo para a data do evento -->
+    <br><br>
 
     <label for="side-a-percentage">Porcentagem de Pagamento Lado A:</label>
     <input type="number" id="side-a-percentage" name="side-a-percentage" step="0.01" min="1" required>
 
     <label for="side-b-percentage">Porcentagem de Pagamento Lado B:</label>
     <input type="number" id="side-b-percentage" name="side-b-percentage" step="0.01" min="1" required>
+    <br>
 
     <button type="submit">Criar Evento</button>
   </form>
