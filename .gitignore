@@ -1,4 +1,13 @@
 node_modules/
 build/ 
 package-lock.json
-*.js
+welcome.js
+register.js
+newevent.js
+mywallet.js
+login.js
+index.js
+closeevents.js
+bet.js
+approveevents.js
+admpage.js
