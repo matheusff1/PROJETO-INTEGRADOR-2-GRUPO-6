@@ -1,28 +1,64 @@
-document.addEventListener('DOMContentLoaded', () => {
-  const urlParams = new URLSearchParams(window.location.search);
-  const userEmail = urlParams.get('email');
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Página do ADM</title>
+  <link rel="stylesheet" href="../styles/styles.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 
-  if (userEmail) {
-    const userEmailElement = document.getElementById('user-email');
-    if (userEmailElement) {
-      userEmailElement.textContent = `Bem-vindo, ${userEmail}!`;
+  <style>
+    body {
+      background-color: rgb(60, 68, 78);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
     }
-  } else {
-    window.location.href = '/'; 
-    return; 
-  }
+    .container {
+      width: 100%;
+      max-width: 400px;
+    }
+    .btn-primary {
+      width: 100%;
+      margin-bottom: 10px;
+    }
+    .top-right-image {
+      width: 50px; /* ajuste o tamanho da imagem */
+      height: 50px;
+      position: absolute;
+      top: 10px;
+      right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <div class="card-body text-center">
+        <h2 id="welcome-message">Bem-vindo, Administrador!</h2>
+        <button id="approve-events-btn" class="btn btn-dark">Aprovar Eventos</button>
+        <button id="close-events-btn" class="btn btn-dark">Encerrar Eventos</button>
+      </div>
+    </div>
+  </div>
 
-  const approveEventsBtn = document.getElementById('approve-events-btn');
-  if (approveEventsBtn) {
-    approveEventsBtn.addEventListener('click', () => {
-      window.location.href = '/approveevents?email=' + encodeURIComponent(userEmail!);
-    });
-  }
+  <!-- Card de boas-vindas no canto superior esquerdo -->
+  <div class="card text-white bg-dark position-absolute top-0 start-0 m-2" style="width: 18rem;">
+    <div class="card-body">
+      <h5 class="card-title">Olá, Administrador!</h5>
+      <p class="card-text">Aqui você pode aprovar e encerrar os eventos criados pelos usuários. O que deseja fazer hoje?</p>
+    </div>
+  </div>
 
-  const closeEventsBtn = document.getElementById('close-events-btn');
-  if (closeEventsBtn) {
-    closeEventsBtn.addEventListener('click', () => {
-      window.location.href = '/closeevents?email=' + encodeURIComponent(userEmail!);
-    });
-  }
-});
+  <!-- Imagem no canto superior direito -->
+  <img src="c:\Users\Pichau\Downloads\Jogo-do-Tigrinho2.png" alt="Imagem" class="top-right-image">
+
+  <footer class="position-fixed bottom-0 w-100 text-center text-white">
+    <p>&copy; 2024 Sistema de Apostas</p>
+  </footer>
+
+  <script src="/ts/admpage.js"></script>
+</body>
+</html>
