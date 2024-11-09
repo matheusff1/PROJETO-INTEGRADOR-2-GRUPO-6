@@ -1,10 +1,8 @@
-import bodyParser from 'body-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import pkg from 'pg';
 import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
-
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
