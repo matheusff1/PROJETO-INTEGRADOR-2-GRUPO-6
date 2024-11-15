@@ -18,6 +18,13 @@ document.addEventListener('DOMContentLoaded', () => {
       window.location.href = '/approveevents?email=' + encodeURIComponent(userEmail!);
     });
   }
+  
+  const rejectEventsBtn = document.getElementById('reject-events-btn');
+  if (rejectEventsBtn) {
+    rejectEventsBtn.addEventListener('click', () => {
+      window.location.href = '/rejectevents?email=' + encodeURIComponent(userEmail!);
+    });
+  }
 
   const closeEventsBtn = document.getElementById('close-events-btn');
   if (closeEventsBtn) {

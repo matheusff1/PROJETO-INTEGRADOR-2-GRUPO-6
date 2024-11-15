@@ -18,6 +18,12 @@ document.addEventListener('DOMContentLoaded', function () {
             window.location.href = '/approveevents?email=' + encodeURIComponent(userEmail);
         });
     }
+    var rejectEventsBtn = document.getElementById('reject-events-btn');
+    if (rejectEventsBtn) {
+        rejectEventsBtn.addEventListener('click', function () {
+            window.location.href = '/rejectevents?email=' + encodeURIComponent(userEmail);
+        });
+    }
     var closeEventsBtn = document.getElementById('close-events-btn');
     if (closeEventsBtn) {
         closeEventsBtn.addEventListener('click', function () {
