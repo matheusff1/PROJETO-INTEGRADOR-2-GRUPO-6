@@ -39,7 +39,7 @@ document.addEventListener('DOMContentLoaded', function () {
     var registerButton = document.getElementById('register-btn');
     if (registerButton) {
         registerButton.addEventListener('click', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var emailInput, nameInput, cpfInput, passwordInput, registerMessageDiv, email, name, cpf, password, response, data, error_1;
+            var emailInput, nameInput, cpfInput, passwordInput, registerMessageDiv, birthdateInput, birthdate, email, name, cpf, password, calculateAge, age, response, data, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
@@ -48,10 +48,27 @@ document.addEventListener('DOMContentLoaded', function () {
                         cpfInput = document.getElementById('register-cpf');
                         passwordInput = document.getElementById('register-password');
                         registerMessageDiv = document.getElementById('register-message');
+                        birthdateInput = document.getElementById('register-date');
+                        birthdate = birthdateInput.value;
                         email = emailInput.value;
                         name = nameInput.value;
                         cpf = cpfInput.value;
                         password = passwordInput.value;
+                        calculateAge = function (birthdate) {
+                            var birthDateObj = new Date(birthdate);
+                            var today = new Date();
+                            var age = today.getFullYear() - birthDateObj.getFullYear();
+                            var monthDifference = today.getMonth() - birthDateObj.getMonth();
+                            if (monthDifference < 0 || (monthDifference === 0 && today.getDate() < birthDateObj.getDate())) {
+                                age--;
+                            }
+                            return age;
+                        };
+                        age = calculateAge(birthdate);
+                        if (age < 18) {
+                            registerMessageDiv.textContent = 'Cadastro permitido apenas para maiores de 18 anos.';
+                            return [2 /*return*/];
+                        }
                         _a.label = 1;
                     case 1:
                         _a.trys.push([1, 4, , 5]);
@@ -60,7 +77,7 @@ document.addEventListener('DOMContentLoaded', function () {
                                 headers: {
                                     'Content-Type': 'application/json'
                                 },
-                                body: JSON.stringify({ email: email, name: name, cpf: cpf, password: password })
+                                body: JSON.stringify({ email: email, name: name, cpf: cpf, password: password, birthdate: birthdate })
                             })];
                     case 2:
                         response = _a.sent();

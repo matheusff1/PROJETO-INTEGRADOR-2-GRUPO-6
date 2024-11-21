@@ -32,11 +32,15 @@
     
       <div class="mb-3">
       <label for="register-name" class="form-label">Nome</label>
-      <input type="text" class="form-control" id="register-name" >
+      <input type="text" class="form-control" id="register-name" required>
     </div>
     <div class="mb-3">
       <label for="register-cpf" class="form-label">CPF</label>
-      <input type="text" class="form-control" id="register-cpf" >
+      <input type="text" class="form-control" id="register-cpf" required>
+    </div>
+    <div class="mb-3">
+      <label for="register-date" class="form-label">Data de Nascimento</label>
+      <input type="date" class="form-control" id="register-date" required>
     </div>
     
     <div class="mb-3">
@@ -44,10 +48,7 @@
       <input type="email" class="form-control" id="register-email" placeholder="nome@exemplo.com" required>
     </div>
     <label for="register-password" class="form-label">Senha</label>
-    <input type="password" id="register-password" class="form-control" aria-describedby="passwordHelpBlock">
-    <div id="passwordHelpBlock" class="form-text">
-      Sua senha deve ter de 8 a 20 caracteres, conter letras e números e não deve conter espaços, caracteres especiais ou emojis.
-    </div>
+    <input type="password" id="register-password" class="form-control" required>
     <br>
     <button id="register-btn" type="button">Cadastrar</button>
     </form>

@@ -107,11 +107,11 @@ app.post('/login', async (req: Request, res: Response): Promise<void> => {
 
 app.post('/register', async (req: Request, res: Response): Promise<void> => {
     console.log('Requisição POST para /register');
-    const { email, name, cpf, password } = req.body;
+    const { email, name, cpf, password, birthdate} = req.body;
     try {
         await pool.query(
-            'INSERT INTO users (email, name, cpf, password) VALUES ($1, $2, $3, $4)',
-            [email, name, cpf, password]
+            'INSERT INTO users (email, name, cpf, password, birthdate) VALUES ($1, $2, $3, $4, $5)',
+            [email, name, cpf, password, birthdate]
         );
 
         await pool.query(

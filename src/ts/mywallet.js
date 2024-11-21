@@ -50,39 +50,106 @@ document.addEventListener('DOMContentLoaded', function () {
     var addBalanceBtn = document.getElementById('add-balance-btn');
     if (addBalanceBtn) {
         addBalanceBtn.addEventListener('click', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var amountInput, amount;
+            var amountInput, nameInput, cardNumberInput, codNumberInput, dataExpeInput, nameCard, cardNumber, codNumber, dataExpe, amount;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
                         amountInput = document.getElementById('add-balance-amount');
+                        nameInput = document.getElementById('register-nomeCartao');
+                        cardNumberInput = document.getElementById('register-nuCartao');
+                        codNumberInput = document.getElementById('register-cod');
+                        dataExpeInput = document.getElementById('register-dataExp');
+                        nameCard = nameInput.value;
+                        cardNumber = cardNumberInput.value;
+                        codNumber = codNumberInput.value;
+                        dataExpe = dataExpeInput.value;
                         amount = parseFloat(amountInput.value);
-                        if (!(!isNaN(amount) && amount > 0)) return [3 /*break*/, 2];
+                        if (!(nameCard !== "" && cardNumber !== "" && codNumber !== "" && dataExpe !== "" && !isNaN(amount) && amount > 0)) return [3 /*break*/, 2];
                         return [4 /*yield*/, updateBalanceInDatabase(userEmail, amount)];
                     case 1:
                         _a.sent();
                         updateBalance(userEmail);
-                        _a.label = 2;
-                    case 2: return [2 /*return*/];
+                        return [3 /*break*/, 3];
+                    case 2:
+                        alert("Por favor, preencha todos os campos corretamente.");
+                        _a.label = 3;
+                    case 3: return [2 /*return*/];
                 }
             });
         }); });
     }
-    var removeBalanceBtn = document.getElementById('remove-balance-btn');
-    if (removeBalanceBtn) {
-        removeBalanceBtn.addEventListener('click', function () { return __awaiter(void 0, void 0, void 0, function () {
-            var amountInput, amount;
+    // Função para saque via conta-corrente
+    var removeBalanceAccountBtn = document.getElementById('remove-balance-btn-account');
+    if (removeBalanceAccountBtn) {
+        removeBalanceAccountBtn.addEventListener('click', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var amountInput, bankInput, agencyInput, accountInput, bank, agency, account, amount, error_1;
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        amountInput = document.getElementById('remove-balance-amount');
+                        amountInput = document.getElementById('remove-balance-amount-account');
+                        bankInput = document.getElementById('register-bank');
+                        agencyInput = document.getElementById('register-agency');
+                        accountInput = document.getElementById('register-accountd');
+                        bank = bankInput.value;
+                        agency = agencyInput.value;
+                        account = accountInput.value;
                         amount = parseFloat(amountInput.value);
-                        if (!(!isNaN(amount) && amount > 0)) return [3 /*break*/, 2];
-                        return [4 /*yield*/, removeBalanceFromDatabase(userEmail, amount)];
+                        if (!(bank && agency && account && !isNaN(amount) && amount > 0)) return [3 /*break*/, 5];
+                        _a.label = 1;
                     case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, removeBalanceFromDatabase(userEmail, amount)];
+                    case 2:
                         _a.sent();
                         updateBalance(userEmail);
-                        _a.label = 2;
-                    case 2: return [2 /*return*/];
+                        alert("Saque via conta-corrente realizado com sucesso!");
+                        return [3 /*break*/, 4];
+                    case 3:
+                        error_1 = _a.sent();
+                        alert("Erro ao realizar o saque. Tente novamente.");
+                        console.error(error_1);
+                        return [3 /*break*/, 4];
+                    case 4: return [3 /*break*/, 6];
+                    case 5:
+                        alert("Preencha todos os campos corretamente.");
+                        _a.label = 6;
+                    case 6: return [2 /*return*/];
+                }
+            });
+        }); });
+    }
+    // Função para saque via Pix
+    var removeBalancePixBtn = document.getElementById('remove-balance-btn-pix');
+    if (removeBalancePixBtn) {
+        removeBalancePixBtn.addEventListener('click', function () { return __awaiter(void 0, void 0, void 0, function () {
+            var amountInput, pixInput, pix, amount, error_2;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        amountInput = document.getElementById('remove-balance-amount-pix');
+                        pixInput = document.getElementById('register-keyPix');
+                        pix = pixInput.value;
+                        amount = parseFloat(amountInput.value);
+                        if (!(pix && !isNaN(amount) && amount > 0)) return [3 /*break*/, 5];
+                        _a.label = 1;
+                    case 1:
+                        _a.trys.push([1, 3, , 4]);
+                        return [4 /*yield*/, removeBalanceFromDatabase(userEmail, amount)];
+                    case 2:
+                        _a.sent();
+                        updateBalance(userEmail);
+                        alert("Saque via Pix realizado com sucesso!");
+                        return [3 /*break*/, 4];
+                    case 3:
+                        error_2 = _a.sent();
+                        alert("Erro ao realizar o saque. Tente novamente.");
+                        console.error(error_2);
+                        return [3 /*break*/, 4];
+                    case 4: return [3 /*break*/, 6];
+                    case 5:
+                        alert("Preencha todos os campos corretamente.");
+                        _a.label = 6;
+                    case 6: return [2 /*return*/];
                 }
             });
         }); });
