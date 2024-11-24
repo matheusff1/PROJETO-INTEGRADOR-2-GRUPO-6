@@ -198,23 +198,19 @@ app.post('/wallet/remove-balance', async (req: Request, res: Response): Promise<
     const { email, amount } = req.body;
   
     try {
-        // Consulta o saldo atual do usuário
         const result = await pool.query('SELECT balance FROM wallets WHERE email = $1', [email]);
         
         if (result.rows.length > 0) {
             const currentBalance = result.rows[0].balance;
   
-            // Calcula a taxa de saque e o total a ser descontado
             const fee = calculateWithdrawalFee(amount);
             const totalAmount = amount - fee;
   
             if (currentBalance >= totalAmount) {
-                // Atualiza o saldo subtraindo o valor total (valor solicitado + taxa)
                 await pool.query('UPDATE wallets SET balance = balance - $1 WHERE email = $2', [totalAmount, email]);
                 
                 console.log(`Saldo removido para: ${email}. Valor solicitado: R$${amount.toFixed(2)}, taxa: R$${fee.toFixed(2)}, total descontado: R$${totalAmount.toFixed(2)}`);
                 
-                // Retorna a resposta com os detalhes do saque
                 res.status(200).json({
                     message: 'Saldo removido com sucesso!',
                     detalhes: {
@@ -240,7 +236,7 @@ app.post('/wallet/remove-balance', async (req: Request, res: Response): Promise<
 app.post('/eventos/create', async (req: Request, res: Response): Promise<void> => {
     const { nome_evento, lado_a, lado_b, data_evento, porcentagem_lado_a, porcentagem_lado_b, descricao_event } = req.body;
 
-    console.log('Dados recebidos:', req.body);  // Verifique se descricao está presente
+    console.log('Dados recebidos:', req.body);
 
     try {
         const result = await pool.query(
@@ -284,7 +280,6 @@ app.post('/events/reject/:id', async (req: Request, res: Response): Promise<void
     const { id } = req.params;
     const { motivo } : { motivo: string}= req.body;
     try {
-        // Primeira atualização: definir 'aprovado' como FALSE
         await pool.query('UPDATE eventos SET aprovado = FALSE WHERE id = $1', [id]);
 
         res.status(200).json({ message: `Evento rejeitado e status atualizado para encerrado com sucesso! ${motivo}` });
@@ -372,8 +367,12 @@ app.post('/events/close/:nomeEvento', async (req: Request, res: Response): Promi
         if (totalWinners > 0) {
             for (const bet of bets) {
                 if (bet.lado_apostado === winningSide) {
-                    const betPercentage = parseFloat(event[`porcentagem_lado_${winningSide.toLowerCase()}`]);
+                    let betPercentage = bet.valor_apostado / totalBetWinningSide;
+                    const betPercentageEvent = parseFloat(event[`porcentagem_lado_${winningSide.toLowerCase()}`]);
                     const betValue = parseFloat(bet.valor_apostado);
+                    if (betPercentage > betPercentageEvent) {
+                        betPercentage = betPercentageEvent;
+                    }
                     const payout = (betPercentage * betValue);
 
                     console.log('bet.valor_apostado:', betValue);
@@ -394,7 +393,6 @@ app.post('/events/close/:nomeEvento', async (req: Request, res: Response): Promi
         res.status(500).json({ error: 'Erro ao encerrar evento.' });
     }
 });
-
 
 app.listen(port, () => {
     console.log(`Servidor ouvindo na porta ${port}`);
