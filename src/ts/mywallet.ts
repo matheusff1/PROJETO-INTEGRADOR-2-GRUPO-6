@@ -16,11 +16,14 @@ document.addEventListener('DOMContentLoaded', () => {
     addBalanceBtn.addEventListener('click', async () => {
       const amountInput = document.getElementById('add-balance-amount') as HTMLInputElement;
       const nameInput = document.getElementById('register-nomeCartao') as HTMLInputElement;
+      const cpfInput = document.getElementById('register-cpf') as HTMLInputElement;
       const cardNumberInput = document.getElementById('register-nuCartao') as HTMLInputElement;
       const codNumberInput = document.getElementById('register-cod') as HTMLInputElement;
       const dataExpeInput = document.getElementById('register-dataExp') as HTMLInputElement;
+      const confirmationMessage = document.getElementById('confirmation-message');
 
       const nameCard = nameInput.value;
+      const cpfcard = cpfInput.value;
       const cardNumber = cardNumberInput.value;
       const codNumber = codNumberInput.value;
       const dataExpe = dataExpeInput.value;
@@ -28,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (nameCard !== "" && cardNumber !== "" && codNumber !== "" && dataExpe !== "" && !isNaN(amount) && amount > 0) {
         await updateBalanceInDatabase(userEmail!, amount);
         updateBalance(userEmail!);
+        alert("depósito via cartão realizado com sucesso!");
       } else {
         alert("Por favor, preencha todos os campos corretamente.");
       }
