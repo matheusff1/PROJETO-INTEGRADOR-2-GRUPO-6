@@ -257,7 +257,7 @@ app.post('/eventos/create', async (req: Request, res: Response): Promise<void> =
 
 app.get('/events/pending', async (req: Request, res: Response): Promise<void> => {
     try {
-        const result = await pool.query('SELECT * FROM eventos WHERE aprovado = FALSE');
+        const result = await pool.query('SELECT * FROM eventos WHERE aprovado = FALSE AND status != $1', ['rejeitado']);
         res.json(result.rows);
     } catch (err) {
         console.error('Erro ao buscar eventos pendentes:', err);
@@ -278,17 +278,20 @@ app.post('/events/approve/:id', async (req: Request, res: Response): Promise<voi
 });
 app.post('/events/reject/:id', async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
-    const { motivo } : { motivo: string}= req.body;
+    const { motivo }: { motivo: string } = req.body;
     try {
-        await pool.query('UPDATE eventos SET aprovado = FALSE WHERE id = $1', [id]);
+        // Atualiza as colunas 'aprovado' e 'status'
+        await pool.query(
+            'UPDATE eventos SET aprovado = FALSE, status = $2 WHERE id = $1',
+            [id, 'rejeitado']
+        );
 
-        res.status(200).json({ message: `Evento rejeitado e status atualizado para encerrado com sucesso! ${motivo}` });
+        res.status(200).json({ message: `Evento rejeitado com sucesso! Motivo: ${motivo}` });
     } catch (err) {
-        console.error('Erro ao rejeitar e encerrar evento:', err);
-        res.status(500).json({ error: 'Erro ao rejeitar e encerrar evento' });
+        console.error('Erro ao rejeitar evento:', err);
+        res.status(500).json({ error: 'Erro ao rejeitar o evento' });
     }
 });
-
 
 app.get('/events/available', async (req: Request, res: Response): Promise<void> => {
     try {

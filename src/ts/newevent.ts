@@ -43,6 +43,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (response.ok) {
           responseMessageDiv.textContent = data.message;
+          alert("Evento criado com sucesso.");
+          window.location.href = "/welcome";
         } else {
           responseMessageDiv.textContent = `Erro: ${data.error}`;
         }

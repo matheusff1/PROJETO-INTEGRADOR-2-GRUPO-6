@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
         await updateBalanceInDatabase(userEmail!, amount);
         updateBalance(userEmail!);
         alert("depósito via cartão realizado com sucesso!");
+        window.location.href = "mywallet?email=" + userEmail;
       } else {
         alert("Por favor, preencha todos os campos corretamente.");
       }
@@ -57,6 +58,7 @@ if (removeBalanceAccountBtn) {
         await removeBalanceFromDatabase(userEmail!, amount);
         updateBalance(userEmail!);
         alert("Saque via conta-corrente realizado com sucesso!");
+        window.location.href = "mywallet?email=" + userEmail;
       } catch (error) {
         alert("Erro ao realizar o saque. Tente novamente.");
         console.error(error);
@@ -82,6 +84,7 @@ if (removeBalancePixBtn) {
         await removeBalanceFromDatabase(userEmail!, amount);
         updateBalance(userEmail!);
         alert("Saque via Pix realizado com sucesso!");
+        window.location.href = "mywallet?email=" + userEmail;
       } catch (error) {
         alert("Erro ao realizar o saque. Tente novamente.");
         console.error(error);
