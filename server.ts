@@ -32,18 +32,13 @@ app.use('/ts', express.static(path.join(__dirname, 'src', 'ts')));
 app.use('/styles', express.static(path.join(__dirname, 'src' ,'styles')));
 app.use('/imagem', express.static(path.join(__dirname, 'src', 'imagem')));
 
-
-
-
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
     ssl: {
         rejectUnauthorized: false
     }
 });
-
-app.use(express.json());
-
+ 
 app.get('/', (req: Request, res: Response): void => {
     console.log('Requisição GET para /');
     res.sendFile(path.join(__dirname, 'src', 'views', 'index.html'));
@@ -243,6 +238,38 @@ app.post('/wallet/remove-balance', async (req: Request, res: Response): Promise<
         res.status(500).json({ message: 'Erro no servidor.' });
     }
   });
+  
+  app.get('/wallet/extract/:email', async (req: Request, res: Response): Promise<void> => {
+    const { email } = req.params; // Obtém o e-mail dos parâmetros da URL
+  
+    try {
+      const result = await pool.query(
+        `
+        SELECT 
+          id_evento AS evento, 
+            lado_apostado, 
+            valor_apostado AS valor, 
+            TO_CHAR(data_aposta, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS data_evento
+            FROM apostas
+            WHERE email_usuario = $1
+        `,
+        [email] // Passa o e-mail como parâmetro para evitar injeção de SQL
+      );
+  
+      // Verifica se o resultado está vazio antes de enviar a resposta
+    if (result.rows.length === 0) {
+        res.status(404).json({ message: 'Nenhum registro encontrado para este e-mail.' });
+        return; // Garante que o código abaixo não será executado
+      }
+  
+      // Envia os dados se houverem resultados
+      res.json(result.rows);
+    } catch (err) {
+      console.error('Erro ao buscar os dados do banco:', err);
+      res.status(500).json({ error: 'Erro ao buscar os dados do banco' });
+    }
+  });
+
 
 app.post('/eventos/create', async (req: Request, res: Response): Promise<void> => {
     const { nome_evento, lado_a, lado_b, data_evento, porcentagem_lado_a, porcentagem_lado_b, descricao_event } = req.body;
@@ -287,39 +314,22 @@ app.post('/events/approve/:id', async (req: Request, res: Response): Promise<voi
         res.status(500).json({ error: 'Erro ao aprovar evento' });
     }
 });
-
 app.post('/events/reject/:id', async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
-    const { motivo, userEmail }: { motivo: string; userEmail: string } = req.body;
-  
-    if (!motivo) {
-      res.status(400).json({ error: 'Motivo da rejeição é obrigatório.' });
-      return;
-    }
-  
+    const { motivo }: { motivo: string } = req.body;
     try {
-    // Atualiza as colunas 'aprovado' e 'status' no banco de dados
-    await pool.query(
-      'UPDATE eventos SET aprovado = FALSE, status = $2 WHERE id = $1',
-      [id, 'rejeitado']
-    );
-  
-    console.log(`Evento ${id} rejeitado no banco de dados com o motivo: ${motivo}`);
+        // Atualiza as colunas 'aprovado' e 'status'
+        await pool.query(
+            'UPDATE eventos SET aprovado = FALSE, status = $2 WHERE id = $1',
+            [id, 'rejeitado']
+        );
 
-    await transporter.sendMail({
-        from: '"Eliza Bet" <elizabetbotevento@gmail.com>',
-        to: userEmail,
-        subject: 'Seu Evento Foi Recusado',
-        text: `Seu evento foi recusado pelo seguinte motivo: ${motivo}`,
-    });
-  
-    console.log(`Email enviado para ${userEmail}`);
-    res.status(200).json({ message: `Evento rejeitado com sucesso! Motivo: ${motivo}` });
+        res.status(200).json({ message: `Evento rejeitado com sucesso! Motivo: ${motivo}` });
     } catch (err) {
-    console.error('Erro ao rejeitar evento ou enviar email:', err);
-    res.status(500).json({ error: 'Erro ao rejeitar o evento ou enviar email.' });
+        console.error('Erro ao rejeitar evento:', err);
+        res.status(500).json({ error: 'Erro ao rejeitar o evento' });
     }
-  });
+});
 
 app.get('/events/available', async (req: Request, res: Response): Promise<void> => {
     try {
