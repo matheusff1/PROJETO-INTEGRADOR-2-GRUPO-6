@@ -30,7 +30,7 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'src', 'views')));
 app.use('/ts', express.static(path.join(__dirname, 'src', 'ts')));
 app.use('/styles', express.static(path.join(__dirname, 'src' ,'styles')));
-app.use('/imagem', express.static(path.join(__dirname, 'src', 'imagem')));
+app.use('/images', express.static(path.join(__dirname, 'src', 'images')));
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
