@@ -232,6 +232,38 @@ app.post('/wallet/remove-balance', async (req: Request, res: Response): Promise<
         res.status(500).json({ message: 'Erro no servidor.' });
     }
   });
+  
+  app.get('/wallet/extract/:email', async (req: Request, res: Response): Promise<void> => {
+    const { email } = req.params; // Obtém o e-mail dos parâmetros da URL
+  
+    try {
+      const result = await pool.query(
+        `
+        SELECT 
+          id_evento AS evento, 
+            lado_apostado, 
+            valor_apostado AS valor, 
+            TO_CHAR(data_aposta, 'YYYY-MM-DD"T"HH24:MI:SS"Z"') AS data_evento
+            FROM apostas
+            WHERE email_usuario = $1
+        `,
+        [email] // Passa o e-mail como parâmetro para evitar injeção de SQL
+      );
+  
+      // Verifica se o resultado está vazio antes de enviar a resposta
+    if (result.rows.length === 0) {
+        res.status(404).json({ message: 'Nenhum registro encontrado para este e-mail.' });
+        return; // Garante que o código abaixo não será executado
+      }
+  
+      // Envia os dados se houverem resultados
+      res.json(result.rows);
+    } catch (err) {
+      console.error('Erro ao buscar os dados do banco:', err);
+      res.status(500).json({ error: 'Erro ao buscar os dados do banco' });
+    }
+  });
+
 
 app.post('/eventos/create', async (req: Request, res: Response): Promise<void> => {
     const { nome_evento, lado_a, lado_b, data_evento, porcentagem_lado_a, porcentagem_lado_b, descricao_event } = req.body;
