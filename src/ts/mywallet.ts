@@ -39,47 +39,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  
-  // Define a função principal como async
-async function loadExtractData(): Promise<void> {
-  try {
-    const userEmail = new URLSearchParams(window.location.search).get('email'); // Substitua pelo e-mail real ou obtenha dinamicamente
-
-    // Fazendo a requisição para o backend
-    const response = await fetch(`/wallet/extract/${userEmail}`);
-    if (!response.ok) {
-      throw new Error('Erro ao buscar os dados do extrato');
-    }
-
-    const tableBody = document.querySelector('#user-extract-table');
-    const extract: { evento: number; lado_apostado: string; data_evento: string ,  valor: number; }[] = await response.json();
-    if (!tableBody) {
-      console.error('Tabela não encontrada no DOM');
-      return;
-    }
-     // Fazendo a requisição para obter os eventos pendentes do servidor
- 
-
-  // Preencher a tabela com os eventos
-  
-  if (tableBody) {
-    extract.forEach(extract => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${extract.evento}</td>
-        <td>${extract.lado_apostado}</td>
-        <td>R$ ${extract.valor}</td>
-        <td>${new Date(extract.data_evento).toLocaleString('pt-BR')}</td>
-      `;
-      tableBody.appendChild(row);
-    });
-  }
-} catch (error) {
-  console.error('Erro ao preencher a tabela:', error);
-}
-};
-loadExtractData();
-
   // Função para saque via conta-corrente
 const removeBalanceAccountBtn = document.getElementById('remove-balance-btn-account');
 if (removeBalanceAccountBtn) {
