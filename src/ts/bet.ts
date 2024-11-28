@@ -5,6 +5,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     window.location.href = 'index.html';
   } else {
     const userEmailElement = document.getElementById('user-email');
+
     if (userEmailElement) {
       userEmailElement.textContent = `Bem-vindo, ${userEmail}`;
     }
@@ -12,7 +13,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const response = await fetch('/events/available');
   const events: { id: number; nome_evento: string; lado_a: string; lado_b: string; data_evento: string }[] = await response.json();
-
   const tableBody = document.querySelector('#events-table tbody');
   if (tableBody) {
     events.forEach(event => {
@@ -24,88 +24,72 @@ document.addEventListener('DOMContentLoaded', async () => {
         <td>${new Date(event.data_evento).toLocaleString('pt-BR')}</td>
         <td>
           <button onclick="showBetModal(${event.id}, '${event.lado_a}', '${event.lado_b}')">Apostar</button>
-        </td>
-      `;
+        </td>`;
       tableBody.appendChild(row);
     });
   }
-
-
 });
 
 const searchButton = document.getElementById('search') as HTMLButtonElement;
 
 if (searchButton) {
-    searchButton.addEventListener('click', async () => {
-        const searchBet = document.getElementById('searchInput') as HTMLInputElement;
-        const keyword = searchBet.value;
+  searchButton.addEventListener('click', async () => {
+    const searchBet = document.getElementById('searchInput') as HTMLInputElement;
+    const keyword = searchBet.value;
 
-        if (!keyword) {
-            alert('Por favor, insira uma palavra-chave para a busca.');
-            return;
-        }
+    if (!keyword) {
+      alert('Por favor, insira uma palavra-chave para a busca.');
+      return;
+    }
+    try {
+      const response = await fetch(`http://localhost:3201/events/search?keyword=${encodeURIComponent(keyword)}`);
+      console.log('Status:', response.status);
+      console.log('Resposta completa:', response);
 
-        try {
-          const response = await fetch(`http://localhost:3201/events/search?keyword=${encodeURIComponent(keyword)}`);
-          console.log('Status:', response.status);
-          console.log('Resposta completa:', response);
+      if (!response.ok) {
+        console.error('Erro na requisição:', response.status);
+        throw new Error('Erro ao buscar eventos.');
+      }
 
-          
-          if (!response.ok) {
-            console.error('Erro na requisição:', response.status);
-            throw new Error('Erro ao buscar eventos.');
-        }
-         
-          const events: { id: number; nome_evento: string; lado_a: string; lado_b: string; data_evento: string }[] = await response.json();
-          console.log('Eventos recebidos:', events);
+      const events: { id: number; nome_evento: string; lado_a: string; lado_b: string; data_evento: string }[] = await response.json();
+      console.log('Eventos recebidos:', events);
+      const tableBodySearch = document.getElementById('tableBodySearch') as HTMLTableSectionElement;
+      tableBodySearch.innerHTML = '';
       
-          const tableBodySearch = document.getElementById('tableBodySearch') as HTMLTableSectionElement;
-      
-          tableBodySearch.innerHTML = '';
-      
-          if (events.length === 0) {
-              tableBodySearch.innerHTML = '<tr><td colspan="5">Nenhum evento encontrado.</td></tr>';
-              return;
-          }
-      
-          const tableBody = document.querySelector('#events-table tbody');
-          if (tableBody) {
-            events.forEach(event => {
-              const row = document.createElement('tr');
-              row.innerHTML = `
-                <td>${event.nome_evento}</td>
-                <td>${event.lado_a}</td>
-                <td>${event.lado_b}</td>
-                <td>${new Date(event.data_evento).toLocaleString('pt-BR')}</td>
-                <td>
-                  <button onclick="showBetModal(${event.id}, '${event.lado_a}', '${event.lado_b}')">Apostar</button>
-                </td>
-              `;
-              tableBody.appendChild(row);
-            });
-          }
-         
-      } catch (error) {
-          console.error('Erro ao buscar eventos:', error);
-          alert('Erro ao buscar eventos. Veja o console para mais detalhes.');
+      if (events.length === 0) {
+        tableBodySearch.innerHTML = '<tr><td colspan="5">Nenhum evento encontrado.</td></tr>';
+        return;
       }
       
-    });
+      const tableBody = document.querySelector('#events-table tbody');
+
+      if (tableBody) {
+        events.forEach(event => {
+          const row = document.createElement('tr');
+          row.innerHTML = `
+            <td>${event.nome_evento}</td>
+            <td>${event.lado_a}</td>
+            <td>${event.lado_b}</td>
+            <td>${new Date(event.data_evento).toLocaleString('pt-BR')}</td>
+            <td>
+            <button onclick="showBetModal(${event.id}, '${event.lado_a}', '${event.lado_b}')">Apostar</button>
+            </td>`;
+            tableBody.appendChild(row);
+          });
+      }
+    } catch (error) {
+      console.error('Erro ao buscar eventos:', error);
+      alert('Erro ao buscar eventos. Veja o console para mais detalhes.');
+    }
+     
+  });
 }
 
-
-
-
-
-
 function showBetModal(eventId: number, ladoA: string, ladoB: string): void {
-  // Verifica se já existe um modal no DOM e remove
   const existingModal = document.getElementById('bet-modal');
   if (existingModal) {
     existingModal.remove();
   }
-
-  // Cria o HTML do modal
   const modalHTML = `
     <div id="bet-modal-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000;">
       <div id="bet-modal" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); z-index: 1001; width: 400px; max-width: 90%;">
@@ -133,27 +117,23 @@ function showBetModal(eventId: number, ladoA: string, ladoB: string): void {
     </div>
   `;
 
-  // Adiciona o modal ao body
   const modalContainer = document.createElement('div');
   modalContainer.innerHTML = modalHTML;
   document.body.appendChild(modalContainer);
 }
 
 function closeBetModal(): void {
-  // Remove o modal do DOM
   const modalOverlay = document.getElementById('bet-modal-overlay');
   if (modalOverlay) {
     modalOverlay.remove();
   }
 }
-
 async function placeBet(eventId: number): Promise<void> {
   const side = (document.getElementById('side') as HTMLSelectElement).value;
   const amount = parseFloat((document.getElementById('amount') as HTMLInputElement).value);
   const percentage = parseFloat((document.getElementById('amount') as HTMLInputElement).value);
-
   const userEmail = sessionStorage.getItem('loggedInEmail');
-
+  
   const response = await fetch('/bets/create', {
     method: 'POST',
     headers: {
@@ -166,7 +146,7 @@ async function placeBet(eventId: number): Promise<void> {
       email: userEmail
     }),
   });
-
+  
   const data = await response.json();
 
   if (response.ok) {

@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (userEmail) {
     const userEmailElement = document.getElementById('user-email');
+
     if (userEmailElement) {
       userEmailElement.textContent = `Bem-vindo, ${userEmail}`;
     }
@@ -12,6 +13,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       if (response.ok) {
         const data = await response.json();
+
         if (data.isAdmin) {
           window.location.href = '/admpage?email=' + encodeURIComponent(userEmail);
         }
@@ -27,6 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   const myWalletBtn = document.getElementById('my-wallet-btn');
+
   if (myWalletBtn) {
     myWalletBtn.addEventListener('click', () => {
       window.location.href = '/mywallet?email=' + encodeURIComponent(userEmail);
@@ -34,6 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   const newEventBtn = document.getElementById('new-event-btn');
+
   if (newEventBtn) {
     newEventBtn.addEventListener('click', () => {
       window.location.href = '/newevent?email=' + encodeURIComponent(userEmail);
@@ -41,6 +45,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   const betBtn = document.getElementById('bet-btn');
+  
   if (betBtn) {
     betBtn.addEventListener('click', () => {
       window.location.href = '/bet?email=' + encodeURIComponent(userEmail);

@@ -1,11 +1,10 @@
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM totalmente carregado e analisado');
-
     const loginButton = document.getElementById('bLogin');
+
     if (loginButton) {
         loginButton.addEventListener('click', () => {
             console.log("Requisição para a tela de login");
-
             fetch('/login', {
                 method: 'GET',
             })
@@ -23,10 +22,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     const registerButton = document.getElementById('bRegister');
+
     if (registerButton) {
         registerButton.addEventListener('click', () => {
             console.log("Requisição para a tela de cadastro");
-
             fetch('/register', {
                 method: 'GET',
             })

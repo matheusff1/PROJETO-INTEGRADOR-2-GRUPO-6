@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const emailInput = document.getElementById('login-email') as HTMLInputElement;
             const passwordInput = document.getElementById('login-password') as HTMLInputElement;
             const loginMessage = document.getElementById('login-message') as HTMLDivElement;
-
             const email = emailInput.value;
             const password = passwordInput.value;
 

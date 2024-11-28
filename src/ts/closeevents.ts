@@ -1,5 +1,4 @@
 document.getElementById('eventId')?.addEventListener('change', async () => {
-
   const params = new URLSearchParams(window.location.search);
   const userEmail = params.get('email');
   console.log("EMAIL ATIVO: ",userEmail);
@@ -18,7 +17,6 @@ document.getElementById('eventId')?.addEventListener('change', async () => {
       const response = await fetch(`/events/details/${eventId}`, {
         method: 'GET',
       });
-
       if (!response.ok) {
         messageDiv.innerText = 'Evento não encontrado.';
         return;
@@ -27,14 +25,11 @@ document.getElementById('eventId')?.addEventListener('change', async () => {
       const eventData = await response.json();
       const ladoA = eventData.lado_a;
       const ladoB = eventData.lado_b;
-
       winningSideSelect.innerHTML = '';
-
       const optionA = document.createElement('option');
       optionA.value = 'A';
       optionA.textContent = ladoA;
       winningSideSelect.appendChild(optionA);
-
       const optionB = document.createElement('option');
       optionB.value = 'B';
       optionB.textContent = ladoB;
@@ -49,7 +44,6 @@ document.getElementById('eventId')?.addEventListener('change', async () => {
 
 document.getElementById('closeEventForm')?.addEventListener('submit', async (event) => {
   event.preventDefault();
-
   const eventId = (document.getElementById('eventId') as HTMLInputElement).value;
   const winningSide = (document.getElementById('winningSide') as HTMLSelectElement).value;
   const messageDiv = document.getElementById('message') as HTMLDivElement;

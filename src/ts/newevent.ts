@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const porcentagemLadoBInput = document.getElementById('side-b-percentage') as HTMLInputElement;
       const responseMessageDiv = document.getElementById('response-message') as HTMLDivElement;
       const descricaoEventoInput = document.getElementById('descrition-event') as HTMLInputElement;
-
       const nome_evento = nomeEventoInput.value;
       const lado_a = ladoAInput.value;
       const lado_b = ladoBInput.value;
@@ -20,7 +19,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const porcentagem_lado_a = parseFloat(porcentagemLadoAInput.value);
       const porcentagem_lado_b = parseFloat(porcentagemLadoBInput.value);
       const descricao_event = descricaoEventoInput.value;
-
 
       try {
         const response = await fetch('/eventos/create', {

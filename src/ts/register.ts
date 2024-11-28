@@ -8,14 +8,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const passwordInput = document.getElementById('register-password') as HTMLInputElement;
             const registerMessageDiv = document.getElementById('register-message') as HTMLDivElement;
             const birthdateInput = document.getElementById('register-date') as HTMLInputElement;
-
             const birthdate = birthdateInput.value;
             const email = emailInput.value;
             const name = nameInput.value;
             const cpf = cpfInput.value;
             const password = passwordInput.value;
 
-            // Calcula a idade com base na data de nascimento
             const calculateAge = (birthdate: string): number => {
                 const birthDateObj = new Date(birthdate);
                 const today = new Date();
