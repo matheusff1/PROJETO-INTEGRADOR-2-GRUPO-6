@@ -5,20 +5,11 @@ import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
 
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 587,
-    secure: false,
-    auth: {
-    user: 'boteventoelizabet@gmail.com',
-    pass: 'aejb avfw apkr ibdq',
-  },
-});
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: 'ar.env' });
+dotenv.config({ path: 'email.env' });
 
 const { Pool } = pkg;
 dotenv.config();
@@ -31,6 +22,16 @@ app.use(express.static(path.join(__dirname, 'src', 'views')));
 app.use('/ts', express.static(path.join(__dirname, 'src', 'ts')));
 app.use('/styles', express.static(path.join(__dirname, 'src' ,'styles')));
 app.use('/images', express.static(path.join(__dirname, 'src', 'images')));
+
+const transporter = nodemailer.createTransport({
+    host: 'smtp.gmail.com',
+    port: 587,
+    secure: false,
+    auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS,
+  },
+});
 
 const pool = new Pool({
     connectionString: process.env.DATABASE_URL,
