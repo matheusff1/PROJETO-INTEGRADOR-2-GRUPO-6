@@ -4,6 +4,7 @@ import pkg from 'pg';
 import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
+import { promises } from 'dns';
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
@@ -362,15 +363,9 @@ app.get('/events/search', async (req: Request, res: Response): Promise<void> => 
          res.status(400).json({ error: 'Palavra-chave não informada.' });
     }
     try {
-        const query = `
-            SELECT id, nome_evento, lado_a, lado_b, data_evento 
-            FROM eventos 
-            WHERE nome_evento ILIKE $1`;
-        
-        const values = [`%${keyword}%`];
-        const result = await pool.query(query, values);
+        const result = await pool.query('SELECT id, nome_evento, lado_a, data_evento FROM eventos WHERE nome_evento ILIKE $1 AND status = $2 AND aprovado = $3', [`%${keyword}%`, 'pendente', true] )
+        res.json(result.rows);
         console.log('Resultado da consulta:', result.rows);
-
         if (result.rows.length === 0) {
             res.status(404).json({ message: 'Nenhum evento encontrado.' });
         }
@@ -380,6 +375,19 @@ app.get('/events/search', async (req: Request, res: Response): Promise<void> => 
         res.status(500).json({ error: 'Erro no servidor.' });
     }
 });
+
+app.get('/events/maisApostados', async (req: Request, res: Response): Promise<void> => {
+    try {
+      // Query para buscar os eventos mais apostados
+      const result = await pool.query('SELECT e.id AS id_evento, e.nome_evento AS nome_evento, e.lado_a, e.lado_b, e.data_evento, e.status, e.aprovado, COUNT(a.id) AS total_apostas, SUM(a.valor_apostado) AS total_valor_apostado FROM eventos e LEFT JOIN apostas a ON e.id = a.id_evento WHERE e.status = $1 AND e.aprovado = $2 GROUP BY e.id, e.nome_evento, e.lado_a, e.lado_b, e.data_evento, e.status, e.aprovado ORDER BY total_apostas DESC LIMIT 10;', ['pendente', true]);
+      
+      // Retorna os dados em formato JSON
+      res.json(result.rows);
+    } catch (error) {
+      console.error('Erro ao buscar os eventos mais apostados:', error);
+      res.status(500).json({ error: 'Erro ao buscar os eventos mais apostados' });
+    }
+  });
 
 app.post('/bets/create', async (req: Request, res: Response): Promise<void> => {
     try {

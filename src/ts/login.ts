@@ -1,39 +1,43 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const loginButton = document.getElementById('login-btn');
-    if (loginButton) {
-        loginButton.addEventListener('click', async () => {
-            const emailInput = document.getElementById('login-email') as HTMLInputElement;
-            const passwordInput = document.getElementById('login-password') as HTMLInputElement;
-            const loginMessage = document.getElementById('login-message') as HTMLDivElement;
-            const email = emailInput.value;
-            const password = passwordInput.value;
+  const loginButton = document.getElementById('login-btn');
 
-            try {
-                const response = await fetch('/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email, password })
-                });
+  if (loginButton) {
+    loginButton.addEventListener('click', async () => {
+      const emailInput = document.getElementById('login-email') as HTMLInputElement;
+      const passwordInput = document.getElementById('login-password') as HTMLInputElement;
+      const loginMessage = document.getElementById('login-message') as HTMLDivElement;
 
-                const data = await response.json();
+      const email = emailInput.value;
+      const password = passwordInput.value;
 
-                if (response.ok) {
-                    console.log("FUNCIONAMENTO OK");
-                    loginMessage.textContent = data.message;
-
-                    sessionStorage.setItem('loggedInEmail', email);
-
-                    window.location.href = '/welcome';
-                } else {
-                    loginMessage.textContent = data.message;
-                }
-            } catch (error) {
-                console.log("ERRO OCORREU");
-                console.error('Erro ao fazer login:', error);
-                loginMessage.textContent = 'Erro no servidor.';
-            }
+      try {
+        const response = await fetch('/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
         });
-    }
+
+        const data = await response.json();
+
+        if (response.ok) {
+          console.log("Login bem-sucedido:", data);
+          loginMessage.textContent = data.message;
+
+          // Armazena o email no sessionStorage
+          sessionStorage.setItem('loggedInEmail', email);
+
+          // Redireciona para a página de administração
+          window.location.href = `/welcome?email=${encodeURIComponent(email)}`;
+        } else {
+          console.log("Falha no login:", data);
+          loginMessage.textContent = data.message;
+        }
+      } catch (error) {
+        console.error('Erro ao realizar o login:', error);
+        loginMessage.textContent = 'Erro no servidor. Tente novamente mais tarde.';
+      }
+    });
+  }
 });

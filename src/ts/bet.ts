@@ -42,7 +42,7 @@ if (searchButton) {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:3201/events/search?keyword=${encodeURIComponent(keyword)}`);
+      const response = await fetch(`http://localhost:3200/events/search?keyword=${encodeURIComponent(keyword)}`);
       console.log('Status:', response.status);
       console.log('Resposta completa:', response);
 
