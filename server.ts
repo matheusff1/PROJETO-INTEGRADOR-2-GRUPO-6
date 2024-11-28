@@ -4,15 +4,14 @@ import pkg from 'pg';
 import express, { Request, Response } from 'express';
 import dotenv from 'dotenv';
 import nodemailer from 'nodemailer';
-import { promises } from 'dns';
 
 const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
     secure: false,
     auth: {
-    user: 'elizabetbotevento@gmail.com',
-    pass: 'botdeeventodaelizabet',
+    user: 'boteventoelizabet@gmail.com',
+    pass: 'aejb avfw apkr ibdq',
   },
 });
 
@@ -202,7 +201,8 @@ function calculateWithdrawalFee(amount: number): number {
     } else {
         throw new Error("O valor excede o limite máximo de saque.");
     }
-  }
+}
+
 app.post('/wallet/remove-balance', async (req: Request, res: Response): Promise<void> => {
     console.log('Requisição POST para /wallet/remove-balance');
     const { email, amount } = req.body;
@@ -238,9 +238,9 @@ app.post('/wallet/remove-balance', async (req: Request, res: Response): Promise<
         console.error('Erro ao remover saldo:', error);
         res.status(500).json({ message: 'Erro no servidor.' });
     }
-  });
+});
   
-  app.get('/wallet/extract/:email', async (req: Request, res: Response): Promise<void> => {
+app.get('/wallet/extract/:email', async (req: Request, res: Response): Promise<void> => {
     const { email } = req.params;
   
     try {
@@ -260,17 +260,15 @@ app.post('/wallet/remove-balance', async (req: Request, res: Response): Promise<
       console.error('Erro ao buscar os dados do banco:', err);
       res.status(500).json({ error: 'Erro ao buscar os dados do banco' });
     }
-  });
+});
 
-  app.post('/eventos/create', async (req: Request, res: Response): Promise<void> => {
-    const { nome_evento, lado_a, lado_b, data_evento, data_final_evento, porcentagem_lado_a, porcentagem_lado_b, descricao_event } = req.body;
-
-    // Validar se a data_final_evento é posterior à data_evento
+app.post('/eventos/create', async (req: Request, res: Response): Promise<void> => {
+    const { nome_evento, lado_a, lado_b, data_evento, data_final_evento, porcentagem_lado_a, porcentagem_lado_b, descricao_event, emailCreator } = req.body;
+    
     if (new Date(data_final_evento) <= new Date(data_evento)) {
          res.status(400).json({ message: 'A data final do evento não pode ser anterior ou igual à data do evento.' });
     }
 
-    // Validar se a data_evento é posterior à data e hora atuais
     if (new Date(data_evento) <= new Date()) {
          res.status(400).json({ message: 'O evento não pode ser criado com uma data no passado.' });
     }
@@ -279,9 +277,9 @@ app.post('/wallet/remove-balance', async (req: Request, res: Response): Promise<
 
     try {
         const result = await pool.query(
-            `INSERT INTO eventos (nome_evento, lado_a, lado_b, data_evento, data_final_evento, porcentagem_lado_a, porcentagem_lado_b, descricao, status)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'pendente') RETURNING *`,
-            [nome_evento, lado_a, lado_b, data_evento, data_final_evento, porcentagem_lado_a, porcentagem_lado_b, descricao_event]
+            `INSERT INTO eventos (nome_evento, lado_a, lado_b, data_evento, data_final_evento, porcentagem_lado_a, porcentagem_lado_b, descricao, status, email_creator)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'pendente', $9) RETURNING *`,
+            [nome_evento, lado_a, lado_b, data_evento, data_final_evento, porcentagem_lado_a, porcentagem_lado_b, descricao_event, emailCreator]
         );
         
         res.status(201).json({
@@ -316,9 +314,10 @@ app.post('/events/approve/:id', async (req: Request, res: Response): Promise<voi
         res.status(500).json({ error: 'Erro ao aprovar evento' });
     }
 });
+
 app.post('/events/reject/:id', async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
-    const { motivo, userEmail }: { motivo: string; userEmail?: string } = req.body;
+    const { motivo }: { motivo: string } = req.body;
 
     if (!motivo) {
         res.status(400).json({ error: 'Motivo da rejeição é obrigatório.' });
@@ -341,7 +340,7 @@ app.post('/events/reject/:id', async (req: Request, res: Response): Promise<void
 
         if (emailCreator) {
             const info = await transporter.sendMail({
-                from: '"Eliza Bet" <elizabetbotevento@gmail.com>',
+                from: '"Eliza Bet" <boteventoelizabet@gmail.com>',
                 to: emailCreator,
                 subject: 'Seu Evento Foi Recusado',
                 text: `Seu evento foi recusado pelo seguinte motivo: ${motivo}`,
@@ -391,11 +390,8 @@ app.get('/events/search', async (req: Request, res: Response): Promise<void> => 
 
 app.get('/events/maisApostados', async (req: Request, res: Response): Promise<void> => {
     try {
-      // Query para buscar os eventos mais apostados
-      const result = await pool.query('SELECT e.id AS id_evento, e.nome_evento AS nome_evento, e.lado_a, e.lado_b, e.data_evento, e.status, e.aprovado, COUNT(a.id) AS total_apostas, SUM(a.valor_apostado) AS total_valor_apostado FROM eventos e LEFT JOIN apostas a ON e.id = a.id_evento WHERE e.status = $1 AND e.aprovado = $2 GROUP BY e.id, e.nome_evento, e.lado_a, e.lado_b, e.data_evento, e.status, e.aprovado ORDER BY total_apostas DESC LIMIT 10;', ['pendente', true]);
-      
-      // Retorna os dados em formato JSON
-      res.json(result.rows);
+        const result = await pool.query('SELECT e.id AS id_evento, e.nome_evento AS nome_evento, e.lado_a, e.lado_b, e.data_evento, e.status, e.aprovado, COUNT(a.id) AS total_apostas, SUM(a.valor_apostado) AS total_valor_apostado FROM eventos e LEFT JOIN apostas a ON e.id = a.id_evento WHERE e.status = $1 AND e.aprovado = $2 GROUP BY e.id, e.nome_evento, e.lado_a, e.lado_b, e.data_evento, e.status, e.aprovado ORDER BY total_apostas DESC LIMIT 10;', ['pendente', true]);
+        res.json(result.rows);
     } catch (error) {
       console.error('Erro ao buscar os eventos mais apostados:', error);
       res.status(500).json({ error: 'Erro ao buscar os eventos mais apostados' });

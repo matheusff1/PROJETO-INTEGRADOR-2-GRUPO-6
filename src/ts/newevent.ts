@@ -1,5 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const newEventForm = document.getElementById('new-event-form');
+  const userEmail = sessionStorage.getItem('loggedInEmail');
+  const emailCreator = userEmail;
   
   if (newEventForm) {
     newEventForm.addEventListener('submit', async function (e) {
@@ -15,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const responseMessageDiv = document.getElementById('response-message') as HTMLDivElement | null;
       const descricaoEventoInput = document.getElementById('descrition-event') as HTMLInputElement | null;
       
-      // Verificar se todos os campos necessários existem
       if (!nomeEventoInput || !ladoAInput || !ladoBInput || !dataEventoInput || !dataFinalEventoInput || !porcentagemLadoAInput || !porcentagemLadoBInput || !responseMessageDiv || !descricaoEventoInput) {
         console.error('Erro: Algum dos campos não foi encontrado.');
         return;
@@ -30,7 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
       const porcentagem_lado_b = parseFloat(porcentagemLadoBInput.value);
       const descricao_event = descricaoEventoInput.value;
 
-      // Validação de data no frontend
       if (new Date(data_evento) <= new Date()) {
         responseMessageDiv.textContent = 'O evento não pode ser criado com uma data no passado.';
         responseMessageDiv.style.color = 'red';
@@ -60,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
             porcentagem_lado_a,
             porcentagem_lado_b,
             descricao_event,
+            emailCreator
           }),
         });
 
