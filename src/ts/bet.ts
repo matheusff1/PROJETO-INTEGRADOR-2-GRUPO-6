@@ -33,7 +33,65 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 });
 
+const searchButton = document.getElementById('search') as HTMLButtonElement;
 
+if (searchButton) {
+    searchButton.addEventListener('click', async () => {
+        const searchBet = document.getElementById('searchInput') as HTMLInputElement;
+        const keyword = searchBet.value;
+
+        if (!keyword) {
+            alert('Por favor, insira uma palavra-chave para a busca.');
+            return;
+        }
+
+        try {
+          const response = await fetch(`http://localhost:3201/events/search?keyword=${encodeURIComponent(keyword)}`);
+          console.log('Status:', response.status);
+          console.log('Resposta completa:', response);
+
+          
+          if (!response.ok) {
+            console.error('Erro na requisição:', response.status);
+            throw new Error('Erro ao buscar eventos.');
+        }
+         
+          const events: { id: number; nome_evento: string; lado_a: string; lado_b: string; data_evento: string }[] = await response.json();
+          console.log('Eventos recebidos:', events);
+      
+          const tableBodySearch = document.getElementById('tableBodySearch') as HTMLTableSectionElement;
+      
+          tableBodySearch.innerHTML = '';
+      
+          if (events.length === 0) {
+              tableBodySearch.innerHTML = '<tr><td colspan="5">Nenhum evento encontrado.</td></tr>';
+              return;
+          }
+      
+          const tableBody = document.querySelector('#events-table tbody');
+          if (tableBody) {
+            events.forEach(event => {
+              const row = document.createElement('tr');
+              row.innerHTML = `
+                <td>${event.nome_evento}</td>
+                <td>${event.lado_a}</td>
+                <td>${event.lado_b}</td>
+                <td>${new Date(event.data_evento).toLocaleString('pt-BR')}</td>
+                <td>
+                  <button onclick="showBetModal(${event.id}, '${event.lado_a}', '${event.lado_b}')">Apostar</button>
+                </td>
+              `;
+              tableBody.appendChild(row);
+            });
+          }
+         
+      } catch (error) {
+          console.error('Erro ao buscar eventos:', error);
+          alert('Erro ao buscar eventos. Veja o console para mais detalhes.');
+      }
+      
+    });
+}
 
 
 

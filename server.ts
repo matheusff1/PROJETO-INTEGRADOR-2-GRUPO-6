@@ -340,6 +340,36 @@ app.get('/events/available', async (req: Request, res: Response): Promise<void> 
         res.status(500).json({ error: 'Erro ao buscar eventos' });
     }
 });
+app.get('/events/search', async (req: Request, res: Response): Promise<void> => {
+    const keyword = req.query.keyword as string;
+
+    console.log('Keyword recebida no backend:', keyword);
+
+    if (!keyword) {
+         res.status(400).json({ error: 'Palavra-chave não informada.' });
+    }
+
+    try {
+        const query = `
+            SELECT id, nome_evento, lado_a, lado_b, data_evento 
+            FROM eventos 
+            WHERE nome_evento ILIKE $1
+        `;
+        const values = [`%${keyword}%`];
+        const result = await pool.query(query, values);
+
+        console.log('Resultado da consulta:', result.rows);
+
+        if (result.rows.length === 0) {
+            res.status(404).json({ message: 'Nenhum evento encontrado.' });
+        }
+
+        res.json(result.rows);
+    } catch (error) {
+        console.error('Erro ao buscar eventos:', error);
+        res.status(500).json({ error: 'Erro no servidor.' });
+    }
+});
 
 app.post('/bets/create', async (req: Request, res: Response): Promise<void> => {
     try {
