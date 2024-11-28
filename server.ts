@@ -263,15 +263,27 @@ app.post('/wallet/remove-balance', async (req: Request, res: Response): Promise<
   });
 
   app.post('/eventos/create', async (req: Request, res: Response): Promise<void> => {
-    const { nome_evento, lado_a, lado_b, data_evento, porcentagem_lado_a, porcentagem_lado_b, descricao_event } = req.body;
+    const { nome_evento, lado_a, lado_b, data_evento, data_final_evento, porcentagem_lado_a, porcentagem_lado_b, descricao_event } = req.body;
+
+    // Validar se a data_final_evento é posterior à data_evento
+    if (new Date(data_final_evento) <= new Date(data_evento)) {
+         res.status(400).json({ message: 'A data final do evento não pode ser anterior ou igual à data do evento.' });
+    }
+
+    // Validar se a data_evento é posterior à data e hora atuais
+    if (new Date(data_evento) <= new Date()) {
+         res.status(400).json({ message: 'O evento não pode ser criado com uma data no passado.' });
+    }
+
     console.log('Dados recebidos:', req.body);
 
     try {
         const result = await pool.query(
-            `INSERT INTO eventos (nome_evento, lado_a, lado_b, data_evento, porcentagem_lado_a, porcentagem_lado_b, descricao, status)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, 'pendente') RETURNING *`,
-            [nome_evento, lado_a, lado_b, data_evento, porcentagem_lado_a, porcentagem_lado_b, descricao_event]
-        );        
+            `INSERT INTO eventos (nome_evento, lado_a, lado_b, data_evento, data_final_evento, porcentagem_lado_a, porcentagem_lado_b, descricao, status)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 'pendente') RETURNING *`,
+            [nome_evento, lado_a, lado_b, data_evento, data_final_evento, porcentagem_lado_a, porcentagem_lado_b, descricao_event]
+        );
+        
         res.status(201).json({
             message: 'Evento criado com sucesso!',
             evento: result.rows[0]
@@ -281,6 +293,7 @@ app.post('/wallet/remove-balance', async (req: Request, res: Response): Promise<
         res.status(500).json({ error: 'Erro ao criar o evento' });
     }
 });
+
 
 app.get('/events/pending', async (req: Request, res: Response): Promise<void> => {
     try {
