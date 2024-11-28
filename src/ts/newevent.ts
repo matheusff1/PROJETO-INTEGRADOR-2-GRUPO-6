@@ -1,5 +1,25 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   const newEventForm = document.getElementById('new-event-form');
+  const userEmail = sessionStorage.getItem('loggedInEmail');
+  const emailCreator = userEmail;
+
+  alert("Usuário autenticado: " + emailCreator);
+  
+  if (!emailCreator) {
+    alert("Usuário não autenticado.");
+  } 
+    else
+    {
+    alert(`Usuário autenticado ${emailCreator}.`);
+    const userEmailElement = document.getElementById('user-email');
+    if (userEmailElement) {
+        userEmailElement.textContent = `Bem-vindo, ${emailCreator}!`;
+      }
+    }
+
+  console.log(emailCreator);
+
+
   if (newEventForm) {
     newEventForm.addEventListener('submit', async function (e) {
       e.preventDefault();
@@ -12,6 +32,7 @@ document.addEventListener('DOMContentLoaded', () => {
       const porcentagemLadoBInput = document.getElementById('side-b-percentage') as HTMLInputElement;
       const responseMessageDiv = document.getElementById('response-message') as HTMLDivElement;
       const descricaoEventoInput = document.getElementById('descrition-event') as HTMLInputElement;
+
       const nome_evento = nomeEventoInput.value;
       const lado_a = ladoAInput.value;
       const lado_b = ladoBInput.value;
@@ -34,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
             porcentagem_lado_a,
             porcentagem_lado_b,
             descricao_event,
+            emailCreator,
           }),
         });
 

@@ -11,7 +11,7 @@ const transporter = nodemailer.createTransport({
     secure: false,
     auth: {
     user: 'elizabetbotevento@gmail.com',
-    pass: 'botdeeventodaelizabet',
+    pass: 'nggu ldll gqrp abxr',
   },
 });
 
@@ -201,7 +201,8 @@ function calculateWithdrawalFee(amount: number): number {
     } else {
         throw new Error("O valor excede o limite máximo de saque.");
     }
-  }
+}
+
 app.post('/wallet/remove-balance', async (req: Request, res: Response): Promise<void> => {
     console.log('Requisição POST para /wallet/remove-balance');
     const { email, amount } = req.body;
@@ -237,9 +238,9 @@ app.post('/wallet/remove-balance', async (req: Request, res: Response): Promise<
         console.error('Erro ao remover saldo:', error);
         res.status(500).json({ message: 'Erro no servidor.' });
     }
-  });
-  
-  app.get('/wallet/extract/:email', async (req: Request, res: Response): Promise<void> => {
+});
+
+app.get('/wallet/extract/:email', async (req: Request, res: Response): Promise<void> => {
     const { email } = req.params;
   
     try {
@@ -259,17 +260,17 @@ app.post('/wallet/remove-balance', async (req: Request, res: Response): Promise<
       console.error('Erro ao buscar os dados do banco:', err);
       res.status(500).json({ error: 'Erro ao buscar os dados do banco' });
     }
-  });
+});
 
-  app.post('/eventos/create', async (req: Request, res: Response): Promise<void> => {
-    const { nome_evento, lado_a, lado_b, data_evento, porcentagem_lado_a, porcentagem_lado_b, descricao_event } = req.body;
-    console.log('Dados recebidos:', req.body);
+app.post('/eventos/create', async (req: Request, res: Response): Promise<void> => {
+    const { nome_evento, lado_a, lado_b, data_evento, porcentagem_lado_a, porcentagem_lado_b, descricao_event, emailCreator } = req.body;
+    console.log(emailCreator);
 
     try {
         const result = await pool.query(
-            `INSERT INTO eventos (nome_evento, lado_a, lado_b, data_evento, porcentagem_lado_a, porcentagem_lado_b, descricao, status)
-            VALUES ($1, $2, $3, $4, $5, $6, $7, 'pendente') RETURNING *`,
-            [nome_evento, lado_a, lado_b, data_evento, porcentagem_lado_a, porcentagem_lado_b, descricao_event]
+            `INSERT INTO eventos (nome_evento, lado_a, lado_b, data_evento, porcentagem_lado_a, porcentagem_lado_b, descricao, status, email_creator)
+            VALUES ($1, $2, $3, $4, $5, $6, $7, 'pendente', $8) RETURNING *`,
+            [nome_evento, lado_a, lado_b, data_evento, porcentagem_lado_a, porcentagem_lado_b, descricao_event, emailCreator]
         );        
         res.status(201).json({
             message: 'Evento criado com sucesso!',
@@ -280,6 +281,7 @@ app.post('/wallet/remove-balance', async (req: Request, res: Response): Promise<
         res.status(500).json({ error: 'Erro ao criar o evento' });
     }
 });
+
 
 app.get('/events/pending', async (req: Request, res: Response): Promise<void> => {
     try {
@@ -302,9 +304,10 @@ app.post('/events/approve/:id', async (req: Request, res: Response): Promise<voi
         res.status(500).json({ error: 'Erro ao aprovar evento' });
     }
 });
+
 app.post('/events/reject/:id', async (req: Request, res: Response): Promise<void> => {
     const { id } = req.params;
-    const { motivo, userEmail }: { motivo: string; userEmail?: string } = req.body;
+    const { motivo }: { motivo: string } = req.body;
 
     if (!motivo) {
         res.status(400).json({ error: 'Motivo da rejeição é obrigatório.' });
@@ -345,13 +348,26 @@ app.post('/events/reject/:id', async (req: Request, res: Response): Promise<void
     }
 });
 
-app.get('/events/available', async (req: Request, res: Response): Promise<void> => {
+app.get('/events/search/:name', async (req: Request, res: Response): Promise<void> => {
+    const { name } = req.params; // Obtém o nome do evento da URL
+
     try {
-        const result = await pool.query('SELECT * FROM eventos WHERE status = $1 AND aprovado = $2', ['pendente', true]);
-        res.json(result.rows);
+        const query = `
+            SELECT * FROM eventos
+            WHERE nome_evento ILIKE $1 AND status = $2 AND aprovado = $3
+        `;
+        const values = [`%${name}%`, 'pendente', true]; // Busca eventos que contenham o nome fornecido
+
+        const result = await pool.query(query, values);
+
+        if (result.rows.length === 0) {
+            res.status(404).json({ message: 'Nenhum evento encontrado' });
+        } else {
+            res.json(result.rows);
+        }
     } catch (err) {
-        console.error('Erro ao buscar eventos:', err);
-        res.status(500).json({ error: 'Erro ao buscar eventos' });
+        console.error('Erro ao buscar evento por nome:', err);
+        res.status(500).json({ error: 'Erro ao buscar evento por nome' });
     }
 });
 app.get('/events/search', async (req: Request, res: Response): Promise<void> => {
