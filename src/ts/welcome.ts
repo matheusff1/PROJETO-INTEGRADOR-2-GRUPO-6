@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return; 
   }
 
-  const myWalletBtn = document.getElementById('my-wallet-btn');
+  const myWalletBtn = document.getElementById('go-to-wallet-btn');
 
   if (myWalletBtn) {
     myWalletBtn.addEventListener('click', () => {
@@ -83,7 +83,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const events = await response.json();
 
             highlightsContainer.innerHTML = events
-                .map((event: { nome_evento: string; lado_a: string; lado_b: string }) => {
+                .map((event: { nome_evento: string; lado_a: string; lado_b: string ;descricao: string}) => {
                     return `
                         <div class="col-md-4">
                             <div class="card">
@@ -91,7 +91,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                                     <h5 class="card-title">${event.nome_evento}</h5>
                                     <p class="card-text">
                                         <strong>Lado A:</strong> ${event.lado_a}<br>
-                                        <strong>Lado B:</strong> ${event.lado_b}
+                                        <strong>Lado B:</strong> ${event.lado_b}<br>
+                                      <strong>Descrição:</strong> ${event.descricao}
+                                        
                                     </p>
                                     <a href="#" class="btn btn-primary">Detalhes</a>
                                 </div>
