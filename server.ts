@@ -391,7 +391,7 @@ app.get('/events/search', async (req: Request, res: Response): Promise<void> => 
 
 app.get('/events/maisApostados', async (req: Request, res: Response): Promise<void> => {
     try {
-        const result = await pool.query('SELECT e.id AS id_evento, e.nome_evento AS nome_evento, e.lado_a, e.lado_b, e.data_evento, e.status, e.aprovado, COUNT(a.id) AS total_apostas, SUM(a.valor_apostado) AS total_valor_apostado FROM eventos e LEFT JOIN apostas a ON e.id = a.id_evento WHERE e.status = $1 AND e.aprovado = $2 GROUP BY e.id, e.nome_evento, e.lado_a, e.lado_b, e.data_evento, e.status, e.aprovado ORDER BY total_apostas DESC LIMIT 10;', ['pendente', true]);
+        const result = await pool.query('SELECT e.id AS id_evento, e.nome_evento, e.lado_a, e.lado_b, e.data_evento, e.status, e.aprovado, COUNT(a.id) AS total_apostas, SUM(a.valor_apostado) AS total_valor_apostado FROM eventos e LEFT JOIN apostas a ON e.id = a.id_evento WHERE e.status = $1 AND e.aprovado = $2 GROUP BY e.id, e.nome_evento, e.lado_a, e.lado_b, e.data_evento, e.status, e.aprovado ORDER BY total_apostas DESC LIMIT 10;', ['pendente', true]);
         res.json(result.rows);
     } catch (error) {
       console.error('Erro ao buscar os eventos mais apostados:', error);

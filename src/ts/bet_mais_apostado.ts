@@ -1,12 +1,12 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const userEmail = sessionStorage.getItem('loggedInEmail');
-  
+
   // Verifica se o usuário está logado, caso contrário redireciona
   if (!userEmail) {
     window.location.href = 'index.html';
   } else {
     const userEmailElement = document.getElementById('user-email');
-  
+
     if (userEmailElement) {
       userEmailElement.textContent = `Bem-vindo, ${userEmail}`;
     }
@@ -18,9 +18,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!response.ok) throw new Error('Erro ao carregar os eventos mais apostados');
 
     // Define o tipo dos eventos
-    const events: { id: number; nome_evento: string; lado_a: string; lado_b: string; total_apostas: number; data_evento: string }[] =
+    const events: { id_evento: number; nome_evento: string; lado_a: string; lado_b: string; total_apostas: number; data_evento: string }[] =
       await response.json();
-
+      console.log(events);
     const tableBody = document.querySelector('#events-table-mais-apostados tbody');
 
     if (tableBody) {
@@ -28,20 +28,25 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Preenche a tabela com os eventos
       events.forEach(event => {
+        console.log(event.id_evento); // Verifique se o id_evento está correto aqui
+        const button = document.createElement('button');
+        button.textContent = 'Apostar';
+        button.onclick = () => openBetModal(event.id_evento, event.lado_a, event.lado_b); // Passe o id_evento corretamente
         const row = document.createElement('tr');
-        row.dataset.eventId = event.id.toString();  // Adiciona um data attribute para identificar o evento
         row.innerHTML = `
           <td>${event.nome_evento}</td>
           <td>${event.lado_a}</td>
           <td>${event.lado_b}</td>
-          <td class="apostas">${event.total_apostas}</td>
+          <td>${event.total_apostas}</td>
           <td>${new Date(event.data_evento).toLocaleString('pt-BR')}</td>
-          <td>
-            <button onclick="openBetModal(${event.id}, '${event.lado_a}', '${event.lado_b}')">Apostar</button>
-          </td>
         `;
+        const cell = document.createElement('td');
+        cell.appendChild(button);
+        row.appendChild(cell);
         tableBody.appendChild(row);
       });
+      
+        
     }
   } catch (error) {
     console.error('Erro ao carregar os eventos mais apostados:', error);
@@ -51,6 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 // Função para abrir o modal de apostas
 function openBetModal(eventId: number, ladoA: string, ladoB: string): void {
+  console.log('Abrindo modal com:', { eventId, ladoA, ladoB }); // Debug
   const modalHTML = `
     <div id="modal-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.5); z-index: 1000;">
       <div id="bet-modal" style="position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 20px; border-radius: 10px; width: 400px;">
@@ -68,11 +74,12 @@ function openBetModal(eventId: number, ladoA: string, ladoB: string): void {
       </div>
     </div>
   `;
-  
   const modalContainer = document.createElement('div');
   modalContainer.innerHTML = modalHTML;
   document.body.appendChild(modalContainer);
 }
+
+
 
 // Função para fechar o modal
 function closeModal(): void {
@@ -84,9 +91,15 @@ function closeModal(): void {
 async function confirmBet(eventId: number): Promise<void> {
   const side = (document.getElementById('side') as HTMLSelectElement).value;
   const amount = (document.getElementById('amount') as HTMLInputElement).value;
-  const userEmail = sessionStorage.getItem('loggedInEmail');
-  
+  const userEmail = sessionStorage.getItem('loggedInEmail'); // Certifique-se de que o email está salvo no sessionStorage
+
+  if (!userEmail) {
+    alert('Usuário não autenticado. Por favor, faça login novamente.');
+    return;
+  }
+
   try {
+    // Enviando a requisição para o servidor
     const response = await fetch('/bets/create', {
       method: 'POST',
       headers: {
@@ -99,32 +112,19 @@ async function confirmBet(eventId: number): Promise<void> {
         email: userEmail,
       }),
     });
-  
-    if (response.ok) {
-      alert('Aposta realizada com sucesso!');
-      closeModal();
-      
-      // Atualizar a tabela com a nova contagem de apostas
-      const tableBody = document.querySelector('#events-table-mais-apostados tbody');
-      if (tableBody) {
-        // Encontra a linha correspondente ao evento que recebeu a aposta
-        const row = Array.from(tableBody.querySelectorAll('tr')).find(row => row.dataset.eventId === eventId.toString());
 
-        if (row) {
-          const apostasCell = row.querySelector('.apostas');
-          if (apostasCell) {
-            let apostasCount = parseInt(apostasCell.textContent || '0', 10);
-            apostasCount += 1; // Incrementa a contagem de apostas
-            apostasCell.textContent = apostasCount.toString(); // Atualiza o número na tabela
-          }
-        }
-      }
+    // Tratando a resposta
+    if (response.ok) {
+      const data = await response.json();
+      alert(data.message);
+      closeModal();
+      window.location.reload(); // Recarrega a página para atualizar os dados
     } else {
       const error = await response.json();
-      alert(`Erro ao realizar aposta: ${error.message}`);
+      alert(`Erro ao realizar aposta: ${error.error}`);
     }
   } catch (error) {
     console.error('Erro ao enviar a aposta:', error);
-    alert('Não foi possível realizar a aposta.');
+    alert('Não foi possível realizar a aposta. Tente novamente mais tarde.');
   }
 }
