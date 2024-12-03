@@ -72,10 +72,18 @@ if (searchButton) {
             <td>${event.lado_b}</td>
             <td>${new Date(event.data_evento).toLocaleString('pt-BR')}</td>
             <td>
-            <button onclick="showBetModal(${event.id}, '${event.lado_a}', '${event.lado_b}')">Apostar</button>
+            <button id="show-btn">Apostar</button>
             </td>`;
             tableBody.appendChild(row);
-          });
+            const showButton = document.getElementById('show-btn') as HTMLButtonElement;
+            showButton.addEventListener('click', () => {
+              showBetModal(event.id, event.lado_a, event.lado_b);
+            });
+          }
+          
+        );
+
+          
       }
     } catch (error) {
       console.error('Erro ao buscar eventos:', error);
