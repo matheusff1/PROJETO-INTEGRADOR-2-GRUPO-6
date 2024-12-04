@@ -389,6 +389,16 @@ app.get('/events/search', async (req: Request, res: Response): Promise<void> => 
     }
 });
 
+app.get('/events/proximoAcabar', async (req: Request, res: Response): Promise<void> => {
+    try {
+        const result = await pool.query('SELECT * FROM eventos WHERE status = $1 AND aprovado = $2 ORDER BY data_final_evento DESC;', ['pendente', true]);
+        res.json(result.rows);
+    } catch (err) {
+        console.error('Erro ao buscar eventos:', err);
+        res.status(500).json({ error: 'Erro ao buscar eventos' });
+    }
+});
+
 app.get('/events/maisApostados', async (req: Request, res: Response): Promise<void> => {
     try {
         const result = await pool.query('SELECT e.id AS id_evento, e.nome_evento, e.lado_a, e.lado_b, e.data_evento, e.status, e.aprovado, COUNT(a.id) AS total_apostas, SUM(a.valor_apostado) AS total_valor_apostado FROM eventos e LEFT JOIN apostas a ON e.id = a.id_evento WHERE e.status = $1 AND e.aprovado = $2 GROUP BY e.id, e.nome_evento, e.lado_a, e.lado_b, e.data_evento, e.status, e.aprovado ORDER BY total_apostas DESC LIMIT 10;', ['pendente', true]);
