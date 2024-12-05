@@ -102,14 +102,20 @@ document.addEventListener('DOMContentLoaded', () => {
       const agency = agencyInput.value;
       const account = accountInput.value;
       const amount = parseFloat(amountInput.value);
+      const saldo = document.getElementById('current-balance') as HTMLDivElement;
+      const saldofloat = parseFloat(saldo.textContent || '0')
 
       if (bank && agency && account && !isNaN(amount) && amount > 0) {
         if (userEmail) {
           try {
-            await removeBalanceFromDatabase(userEmail, amount);
-            updateBalance(userEmail);
-            alert("Saque via conta-corrente realizado com sucesso!");
-            window.location.href = `mywallet.html?email=${userEmail}`;
+            if(amount<=saldofloat){
+              await removeBalanceFromDatabase(userEmail, amount);
+              updateBalance(userEmail);
+              alert("Saque via conta-corrente realizado com sucesso!");
+              window.location.href = `mywallet.html?email=${userEmail}`;
+            } else{
+              alert("Saldo insuficiente.")
+            }
           } catch (error) {
             alert("Erro ao realizar o saque. Tente novamente.");
             console.error(error);
@@ -128,14 +134,21 @@ document.addEventListener('DOMContentLoaded', () => {
       const pixInput = document.getElementById('register-keyPix') as HTMLInputElement;
       const pix = pixInput.value;
       const amount = parseFloat(amountInput.value);
+      const saldo = document.getElementById('current-balance') as HTMLDivElement;
+      const saldofloat = parseFloat(saldo.textContent || '0');
 
       if (pix && !isNaN(amount) && amount > 0) {
         if (userEmail) {
           try {
-            await removeBalanceFromDatabase(userEmail, amount);
-            updateBalance(userEmail);
-            alert("Saque via Pix realizado com sucesso!");
-            window.location.href = `mywallet.html?email=${userEmail}`;
+            if(saldofloat < amount){
+              alert("Valor solicitado acima do que voce tem!");
+              window.location.href = `mywallet.html?email=${userEmail}`;
+            } else{
+              await removeBalanceFromDatabase(userEmail, amount);
+              updateBalance(userEmail);
+              alert("Saque via Pix realizado com sucesso!");
+              window.location.href = `mywallet.html?email=${userEmail}`;
+            }
           } catch (error) {
             alert("Erro ao realizar o saque. Tente novamente.");
             console.error(error);
@@ -162,7 +175,7 @@ async function updateBalance(email: string): Promise<void> {
     if (!isNaN(balance)) {
       const balanceElement = document.getElementById('current-balance');
       if (balanceElement) {
-        balanceElement.textContent = `Saldo atual: R$ ${balance.toFixed(2)}`;
+        balanceElement.textContent = `${balance.toFixed(2)}`;
       }
     } else {
       console.error('O saldo retornado não é um número válido:', data.balance);
