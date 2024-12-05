@@ -391,7 +391,7 @@ app.get('/events/search', async (req: Request, res: Response): Promise<void> => 
 
 app.get('/events/proximoAcabar', async (req: Request, res: Response): Promise<void> => {
     try {
-        const result = await pool.query('SELECT * FROM eventos WHERE status = $1 AND aprovado = $2 ORDER BY data_final_evento DESC;', ['pendente', true]);
+        const result = await pool.query('SELECT * FROM eventos WHERE status = $1 AND aprovado = $2 ORDER BY data_final_evento ASC;', ['pendente', true]);
         res.json(result.rows);
     } catch (err) {
         console.error('Erro ao buscar eventos:', err);

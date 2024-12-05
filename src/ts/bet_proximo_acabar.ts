@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       if (!response.ok) throw new Error('Erro ao carregar os eventos mais apostados');
   
       // Define o tipo dos eventos
-      const events: { id: number; nome_evento: string; lado_a: string; lado_b: string; data_evento: string }[] =
+      const events: { id: number; nome_evento: string; lado_a: string; lado_b: string; data_final_evento: string }[] =
         await response.json();
         console.log(events);
       const tableBody = document.querySelector('#events-table-proximo-acabar tbody');
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             <td>${event.nome_evento}</td>
             <td>${event.lado_a}</td>
             <td>${event.lado_b}</td>
-            <td>${new Date(event.data_evento).toLocaleString('pt-BR')}</td>
+            <td>${new Date(event.data_final_evento).toLocaleString('pt-BR')}</td>
           `;
           const cell = document.createElement('td');
           cell.appendChild(button);

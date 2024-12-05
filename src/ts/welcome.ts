@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                                       <strong>Descrição:</strong> ${event.descricao}
                                         
                                     </p>
-                                    <a href="#" class="btn btn-primary">Detalhes</a>
+                                    <a  class="btn btn-primary"  onclick="location.href='bet.html'">Detalhes</a>
                                 </div>
                             </div>
                         </div>
