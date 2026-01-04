@@ -8,8 +8,7 @@ import nodemailer from 'nodemailer';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: 'ar.env' });
-dotenv.config({ path: 'email.env' });
+dotenv.config({ path: '.env' });
 
 const { Pool } = pkg;
 dotenv.config();
