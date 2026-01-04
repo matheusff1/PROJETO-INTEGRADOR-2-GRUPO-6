@@ -1,5 +1,6 @@
 document.addEventListener('DOMContentLoaded', async () => {
   const userEmail = sessionStorage.getItem('loggedInEmail');
+  alert("Usuário autenticado: " + userEmail);
 
   if (userEmail) {
     const userEmailElement = document.getElementById('user-email');
@@ -28,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     return; 
   }
 
-  const myWalletBtn = document.getElementById('my-wallet-btn');
+  const myWalletBtn = document.getElementById('go-to-wallet-btn');
 
   if (myWalletBtn) {
     myWalletBtn.addEventListener('click', () => {
@@ -51,4 +52,62 @@ document.addEventListener('DOMContentLoaded', async () => {
       window.location.href = '/bet?email=' + encodeURIComponent(userEmail);
     });
   }
+  const searchInput = document.querySelector<HTMLInputElement>('#busca');
+  const highlightsContainer = document.querySelector<HTMLDivElement>('.highlights');
+
+  if (searchInput && highlightsContainer) {
+    searchInput.addEventListener('input', async () => {
+        const searchTerm = searchInput.value.trim();
+
+        if (!searchTerm) {
+            highlightsContainer.innerHTML = `
+                <div class="text-center">Digite algo para buscar eventos.</div>
+            `;
+            return;
+        }
+
+        try {
+            const response = await fetch(`/events/search/${encodeURIComponent(searchTerm)}`);
+
+            if (!response.ok) {
+                if (response.status === 404) {
+                    highlightsContainer.innerHTML = `
+                        <div class="text-center">Nenhum evento encontrado para "${searchTerm}".</div>
+                    `;
+                } else {
+                    throw new Error('Erro ao buscar eventos');
+                }
+                return;
+            }
+
+            const events = await response.json();
+
+            highlightsContainer.innerHTML = events
+                .map((event: { nome_evento: string; lado_a: string; lado_b: string ;descricao: string}) => {
+                    return `
+                        <div class="col-md-4">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">${event.nome_evento}</h5>
+                                    <p class="card-text">
+                                        <strong>Lado A:</strong> ${event.lado_a}<br>
+                                        <strong>Lado B:</strong> ${event.lado_b}<br>
+                                      <strong>Descrição:</strong> ${event.descricao}
+                                        
+                                    </p>
+                                    <a  class="btn btn-primary"  onclick="location.href='bet.html'">Detalhes</a>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                })
+                .join('');
+        } catch (error) {
+            console.error('Erro ao buscar eventos:', error);
+            highlightsContainer.innerHTML = `
+                <div class="text-center text-danger">Erro ao buscar eventos. Tente novamente mais tarde.</div>
+            `;
+        }
+    });
+}
 });
